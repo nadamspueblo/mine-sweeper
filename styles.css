@@ -1,0 +1,11 @@
+body {
+    background-color: green;
+}
+
+#gameboard {
+    background-color: beige;
+    width: 80vw;
+    height: 80vh;
+    margin-left: auto;
+    margin-right: auto;
+}
