@@ -150,7 +150,6 @@ function revealCell(event) {
         timerId = setInterval(updateTimer, 1000);
     }
     let data = JSON.parse(overlayCell.getAttribute("data-set"));
-    console.log(data);
 
     let cell = locations[data.row][data.col];
     if (cell.innerText == "💣") {
@@ -217,7 +216,7 @@ function toggleFlag(event) {
         overlayCell.innerText = "";
         flagCount++;
     }
-    else if (flagCount > 0) {
+    else if (flagCount > 0 && overlayCell.style.opacity != "0") {
         overlayCell.innerText = "🚩";
         flagCount--;
     }
@@ -231,14 +230,16 @@ function checkBoard() {
             let cell = locations[r][c];
             let overlayCell = overlayLocations[r][c];
             if (cell.innerText != "💣" && overlayCell.style.opacity != "0") return false;
-            else if (cell.innerText == "💣") bombCells.push(cell);
+            else if (cell.innerText == "💣") bombCells.push({row: r, col: c});
             
         }
     }
     alert("You won!");
     for (let i = 0; i < bombCells.length; i++) {
-        let cell = bombCells[i];
-        cell.style.opacity = "0";
+        let cellOverlay = overlayLocations[bombCells[i].row][bombCells[i].col];
+        setTimeout(() => {
+            cellOverlay.style.opacity = "0";
+        }, 100 * i);
     }
     clearInterval(timerId);
     timerId = null;
