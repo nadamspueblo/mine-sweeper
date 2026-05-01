@@ -19,10 +19,23 @@ body {
 }
 
 #controls {
-    width: 50vw;
+    width: auto;
     color: white;
     padding: 20px;
     background-color: orange;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#controls button {
+    background-color: orange;
+    border: 2px solid white;
+    color: white;
+    padding: 6px 20px;
+    border-radius: 20px;
+    cursor: pointer;
 }
 
 #gameboard {
@@ -31,7 +44,7 @@ body {
     left: 0px;
     display: flex;
     flex-direction: column;
-    width: 50vw;
+    width: fit-content;
     height: fit-content;
     gap: 1px;
     background-color: beige;
@@ -45,14 +58,32 @@ body {
 }
 
 .cell {
-    width: 80px;
-    height: 80px;
-    padding: 10px;
+
     text-align: center;
     align-content: center;
-    font-size: 30px;
     /*border: 1px solid rgb(90, 90, 90); */
     color: rgb(90, 90, 90);
+}
+
+.easy {
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+    font-size: 30px;
+}
+
+.medium {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    font-size: 15px;
+}
+
+.hard {
+    width: 20px;
+    height: 20px;
+    padding: 0px;
+    font-size: 8px;
 }
 
 .bomb {
@@ -73,7 +104,7 @@ body {
 
 #gameoverlay {
     position: absolute;
-    width: 50vw;
+    width: fit-content;
     height: fit-content;
     display: flex;
     flex-direction: column;
@@ -95,6 +126,7 @@ body {
     from {
         transform: scale(1);
     }
+
     to {
         transform: scale(10.0);
     }

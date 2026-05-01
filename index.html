@@ -10,13 +10,23 @@
 
 <body>
     <section id="game-area">
-    <div id="controls">
-        <div><span id="flag-count">10</span> 🚩</div>
-    </div>
+        <div id="controls">
+            <span>
+                <button onclick="startEasy()">Easy</button>
+                <button onclick="startMedium()">Medium</button>
+                <button onclick="startHard()">Hard</button>
+            </span>
+            <span>
+                <span id="timer">000</span>⏱️
+            </span>
+            <span>
+                <span id="flag-count">10</span> 🚩
+            </span>
+        </div>
 
-    <div id="gameboard">
-        <div id="gameoverlay"></div>
-    </div>
+        <div id="gameboard">
+            <div id="gameoverlay"></div>
+        </div>
     </section>
     <script src="script.js"></script>
 </body>

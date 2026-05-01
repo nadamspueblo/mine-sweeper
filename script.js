@@ -1,14 +1,61 @@
 let width = 10;
 let height = 7;
 let bombCount = 10;
+let difficulty = "easy";
 
 let locations = [];
 let overlayLocations = [];
 let gameboard = document.getElementById("gameboard");
 let gameOverlay = document.getElementById("gameoverlay");
+let timerDisplay = document.getElementById("timer");
 let flagCount = bombCount;
 
 createGameBoard();
+
+function startEasy() {
+    clearAll();
+    difficulty = "easy";
+    bombCount = 10;
+    flagCount = bombCount;
+    width = 10;
+    height = 7;
+    document.getElementById("flag-count").innerText = flagCount;
+    timerDisplay.innerText = "000";
+    createGameBoard();
+}
+
+function startMedium() {
+    clearAll();
+    difficulty = "medium";
+    bombCount = 40;
+    flagCount = bombCount;
+    width = 18;
+    height = 14;
+    document.getElementById("flag-count").innerText = flagCount;
+    timerDisplay.innerText = "000";
+    createGameBoard();
+}
+
+function startHard() {
+    clearAll();
+    difficulty = "hard";
+    bombCount = 99;
+    flagCount = bombCount;
+    width = 30;
+    height = 24;
+    document.getElementById("flag-count").innerText = flagCount;
+    timerDisplay.innerText = "000";
+    createGameBoard();
+}
+
+function clearAll() {
+    gameboard.innerHTML = "";
+    gameOverlay = document.createElement("div");
+    gameOverlay.id = "gameoverlay";
+    gameboard.appendChild(gameOverlay);
+    locations = [];
+    overlayLocations = [];
+}
 
 
 function createGameBoard() {
@@ -33,12 +80,14 @@ function createRow(r) {
     for (let c = 0; c < width; c++) {
         let cell = document.createElement("div");
         cell.classList.add("cell");
+        cell.classList.add(difficulty);
         cell.innerText = "0";
         rowDiv.appendChild(cell);
         row.push(cell);
 
         let overlayCell = document.createElement("div");
         overlayCell.classList.add("cell");
+        overlayCell.classList.add(difficulty);
         overlayCell.classList.add("overlay");
         overlayCell.setAttribute("data-set", JSON.stringify({ row: r, col: c }));
         overlayCell.addEventListener("click", revealCell);
