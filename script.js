@@ -2,13 +2,15 @@ let width = 10;
 let height = 7;
 let bombCount = 10;
 let difficulty = "easy";
+let flagCount = bombCount;
+let timeElapsed = 0;
+let timerId = null;
 
 let locations = [];
 let overlayLocations = [];
 let gameboard = document.getElementById("gameboard");
 let gameOverlay = document.getElementById("gameoverlay");
 let timerDisplay = document.getElementById("timer");
-let flagCount = bombCount;
 
 createGameBoard();
 
@@ -49,6 +51,7 @@ function startHard() {
 }
 
 function clearAll() {
+    if (timerId != null) clearInterval(timerId);
     gameboard.innerHTML = "";
     gameOverlay = document.createElement("div");
     gameOverlay.id = "gameoverlay";
@@ -120,7 +123,8 @@ function placeNumbers() {
             if (cell.innerText == "💣") continue;
             let count = countBombs(r, c);
             cell.innerText = count;
-            if (count == 1) cell.classList.add("one");
+            if (count == 0) cell.classList.add("zero");
+            else if (count == 1) cell.classList.add("one");
             else if (count == 2) cell.classList.add("two");
             else if (count >= 3) cell.classList.add("three");
         }
@@ -142,7 +146,9 @@ function countBombs(r, c) {
 
 function revealCell(event) {
     let overlayCell = event.target;
-    //overlayCell.style.opacity = "0";
+    if (timerId == null) {
+        timerId = setInterval(updateTimer, 1000);
+    }
     let data = JSON.parse(overlayCell.getAttribute("data-set"));
     console.log(data);
 
@@ -180,6 +186,8 @@ function revealGroup(r, c) {
 }
 
 function revealAll() {
+    clearInterval(timerId);
+    timerId = null;
     let count = 0;
     for (let r = 0; r < overlayLocations.length; r++) {
         let overlayRow = overlayLocations[r];
@@ -217,13 +225,32 @@ function toggleFlag(event) {
 }
 
 function checkBoard() {
+    let bombCells = [];
     for (let r = 0; r < locations.length; r++) {
         for (let c = 0; c < locations[0].length; c++) {
             let cell = locations[r][c];
             let overlayCell = overlayLocations[r][c];
             if (cell.innerText != "💣" && overlayCell.style.opacity != "0") return false;
+            else if (cell.innerText == "💣") bombCells.push(cell);
+            
         }
     }
     alert("You won!");
+    for (let i = 0; i < bombCells.length; i++) {
+        let cell = bombCells[i];
+        cell.style.opacity = "0";
+    }
+    clearInterval(timerId);
+    timerId = null;
     return true;
+}
+
+function updateTimer() {
+    timeElapsed++;
+    if (timeElapsed < 9)
+        timerDisplay.innerText = "00" + timeElapsed;
+    else if (timeElapsed < 99)
+        timerDisplay.innerText = "0" + timeElapsed;
+    else 
+        timerDisplay.innerText = timeElapsed;
 }
