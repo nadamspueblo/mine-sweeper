@@ -4,6 +4,8 @@
 
 body {
     background-color: green;
+    font-family: Helvetica, sans-serif;
+    font-weight: 900;
 }
 
 #gameboard {
@@ -34,22 +36,23 @@ body {
     text-align: center;
     align-content: center;
     font-size: 30px;
+    border: 1px solid black;
 }
 
 .bomb {
-    background-color: red;
+    color: red;
 }
 
 .one {
-    background-color: lightgreen;
+    color: lightgreen;
 }
 
 .two {
-    background-color: cornflowerblue;
+    color: cornflowerblue;
 }
 
 .three {
-    background-color: lightpink;
+    color: lightpink;
 }
 
 #gameoverlay {
@@ -65,4 +68,19 @@ body {
 .overlay {
     background-color: darkgreen;
     transition: 1s;
+    cursor: pointer;
+}
+
+.explode {
+    border: none;
+    animation: zoom 2s ease 0s 1;
+}
+
+@keyframes zoom {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(10.0);
+    }
 }

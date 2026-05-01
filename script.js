@@ -22,12 +22,12 @@ function createRow(r) {
     rowDiv.classList.add("row");
     gameboard.appendChild(rowDiv);
     let row = [];
-    
+
     let overlayRowDiv = document.createElement("div");
     overlayRowDiv.classList.add("row");
     gameOverlay.appendChild(overlayRowDiv);
     let overlayRow = [];
-    
+
     for (let c = 0; c < width; c++) {
         let cell = document.createElement("div");
         cell.classList.add("cell");
@@ -44,8 +44,9 @@ function createRow(r) {
         let overlayCell = document.createElement("div");
         overlayCell.classList.add("cell");
         overlayCell.classList.add("overlay");
-        overlayCell.setAttribute("data-set", JSON.stringify({row: r, col: c}));
+        overlayCell.setAttribute("data-set", JSON.stringify({ row: r, col: c }));
         overlayCell.addEventListener("click", revealCell);
+        overlayCell.addEventListener("contextmenu", toggleFlag);
         overlayRow.push(overlayCell);
         overlayRowDiv.appendChild(overlayCell);
     }
@@ -86,8 +87,66 @@ function countBombs(r, c) {
 }
 
 function revealCell(event) {
-    let cell = event.target;
-    cell.style.opacity = "0";
-    let data = JSON.parse(cell.getAttribute("data-set"));
+    let overlayCell = event.target;
+    //overlayCell.style.opacity = "0";
+    let data = JSON.parse(overlayCell.getAttribute("data-set"));
     console.log(data);
+
+    let cell = locations[data.row][data.col];
+    if (cell.innerText == "💣") {
+        cell.innerText = "💥"
+        cell.classList.add("explode");
+        revealAll();
+    }
+    else {
+        revealGroup(data.row, data.col);
+    }
+}
+
+function revealGroup(r, c) {
+    if (r < 0 || r >= height || c < 0 || c >= width) return false;
+    let cell = locations[r][c];
+    if (cell.innerText == "💣") return true;
+    else {
+        let overlayCell = overlayLocations[r][c];
+        if (overlayCell.style.opacity == "0") return;
+        overlayCell.style.opacity = "0";
+        if (cell.innerText == "0") {
+            setTimeout(revealGroup, 100, r - 1, c);
+            setTimeout(revealGroup, 100, r - 1, c - 1);
+            setTimeout(revealGroup, 100, r - 1, c + 1);
+            setTimeout(revealGroup, 100, r, c + 1);
+            setTimeout(revealGroup, 100, r, c - 1);
+            setTimeout(revealGroup, 100, r + 1, c);
+            setTimeout(revealGroup, 100, r + 1, c - 1);
+            setTimeout(revealGroup, 100, r + 1, c + 1);
+        }
+    }
+}
+
+function revealAll() {
+    for (let r = 0; r < overlayLocations.length; r++) {
+        let overlayRow = overlayLocations[r];
+        let row = locations[r];
+        for (let c = 0; c < overlayRow.length; c++) {
+            let overlayCell = overlayRow[c];
+            let cell = row[c];
+            setTimeout(() => {
+                overlayCell.style.opacity = "0";
+                if (cell.innerText == "💣") {
+                    cell.innerText = "💥";
+                    setTimeout(() => {
+                        cell.classList.add("explode");
+                    }, 200)
+                    
+                }
+            }, 100);
+        }
+    }
+}
+
+function toggleFlag(event) {
+    event.preventDefault();
+    let overlayCell = event.target;
+    overlayCell.innerText = overlayCell.innerText == "🚩" ? "" : "🚩";
 }
