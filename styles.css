@@ -126,6 +126,16 @@ body {
     animation-fill-mode: backwards;
 }
 
+.shatter-left {
+    animation: pop-left 0.5s ease-out 0s 1;
+    animation-fill-mode: forwards;
+}
+
+.shatter-right {
+    animation: pop-right 0.5s ease-out 0s 1;
+    animation-fill-mode: forwards;
+}
+
 @keyframes zoom {
     from {
         transform: scale(1);
@@ -133,5 +143,31 @@ body {
 
     to {
         transform: scale(10.0);
+    }
+}
+
+@keyframes pop-left {
+    0% {
+        transform: translate(0px, 0px) scale(1.0);
+    }
+    50% {
+        transform: translate(-20px, -20px) scale(0.8);
+    }
+    100% {
+        transform: translate(-40px, 20px) scale(0.1);
+        opacity: 0;
+    }
+}
+
+@keyframes pop-right {
+    0% {
+        transform: translate(0px, 0px) scale(1.0);
+    }
+    50% {
+        transform: translate(20px, -20px) scale(0.8);
+    }
+    100% {
+        transform: translate(40px, 20px) scale(0.1);
+        opacity: 0;
     }
 }

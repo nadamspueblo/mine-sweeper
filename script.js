@@ -51,7 +51,10 @@ function startHard() {
 }
 
 function clearAll() {
-    if (timerId != null) clearInterval(timerId);
+    if (timerId != null) {
+        clearInterval(timerId);
+        timeElapsed = 0;
+    }
     gameboard.innerHTML = "";
     gameOverlay = document.createElement("div");
     gameOverlay.id = "gameoverlay";
@@ -171,17 +174,40 @@ function revealGroup(r, c) {
         let overlayCell = overlayLocations[r][c];
         if (overlayCell.style.opacity == "0") return;
         overlayCell.style.opacity = "0";
+        createShards(cell);
         if (cell.innerText == "0") {
             setTimeout(revealGroup, 100, r - 1, c);
-            setTimeout(revealGroup, 100, r - 1, c - 1);
-            setTimeout(revealGroup, 100, r - 1, c + 1);
-            setTimeout(revealGroup, 100, r, c + 1);
-            setTimeout(revealGroup, 100, r, c - 1);
-            setTimeout(revealGroup, 100, r + 1, c);
-            setTimeout(revealGroup, 100, r + 1, c - 1);
-            setTimeout(revealGroup, 100, r + 1, c + 1);
+            setTimeout(revealGroup, 200, r - 1, c - 1);
+            setTimeout(revealGroup, 300, r - 1, c + 1);
+            setTimeout(revealGroup, 400, r, c + 1);
+            setTimeout(revealGroup, 500, r, c - 1);
+            setTimeout(revealGroup, 600, r + 1, c);
+            setTimeout(revealGroup, 700, r + 1, c - 1);
+            setTimeout(revealGroup, 800, r + 1, c + 1);
         }
     }
+}
+
+function createShards(cell) {
+    let shard = document.createElement("div");
+    shard.style.position = "absolute";
+    shard.style.width = cell.offsetWidth / 2 + "px";
+    shard.style.height = cell.offsetHeight / 2 + "px";
+    shard.style.backgroundColor = "green";
+    shard.style.left = cell.offsetLeft + "px";
+    shard.style.top = cell.offsetTop + "px";
+    shard.classList.add("shatter-left");
+    gameboard.appendChild(shard);
+    shard = document.createElement("div");
+    shard.style.position = "absolute";
+    shard.style.width = cell.offsetWidth / 2 + "px";
+    shard.style.height = cell.offsetHeight / 2 + "px";
+    shard.style.backgroundColor = "green";
+    shard.style.left = cell.offsetLeft + cell.offsetWidth / 2 + "px";
+    shard.style.top = cell.offsetTop + "px";
+    shard.classList.add("shatter-right");
+    gameboard.appendChild(shard);
+
 }
 
 function revealAll() {
@@ -198,11 +224,11 @@ function revealAll() {
                 overlayCell.style.opacity = "0";
                 if (cell.innerText == "💣") {
                     count++;
-                    cell.innerText = "💥";
                     setTimeout(() => {
+                        cell.innerText = "💥";
                         cell.classList.add("explode");
                     }, 100 * count);
-                    
+
                 }
             }, 100);
         }
@@ -230,8 +256,8 @@ function checkBoard() {
             let cell = locations[r][c];
             let overlayCell = overlayLocations[r][c];
             if (cell.innerText != "💣" && overlayCell.style.opacity != "0") return false;
-            else if (cell.innerText == "💣") bombCells.push({row: r, col: c});
-            
+            else if (cell.innerText == "💣") bombCells.push({ row: r, col: c });
+
         }
     }
     alert("You won!");
@@ -252,6 +278,6 @@ function updateTimer() {
         timerDisplay.innerText = "00" + timeElapsed;
     else if (timeElapsed < 99)
         timerDisplay.innerText = "0" + timeElapsed;
-    else 
+    else
         timerDisplay.innerText = timeElapsed;
 }
