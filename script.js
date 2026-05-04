@@ -169,7 +169,7 @@ function revealCell(event) {
         cell.classList.add("explode");
         revealAll();
     }
-    else {
+    else if (overlayCell.innerText != "🚩"){
         if (cell.innerText == "0") {
             gameArea.classList.add("shake");
             setTimeout(() => {
@@ -326,4 +326,26 @@ function updateStatDisplay() {
 
     let timeDisplay = document.getElementById("time-stat");
     timeDisplay.innerText = bestTime == 0 ? "---" : bestTime + "s";
+}
+
+function sidebarClick(event) {
+    let sidebar = document.getElementById("stats");
+    let heading = document.getElementById("sidebar-heading");
+    if (heading.innerText == "+") {
+        sidebar.style.width = "200px";
+        setTimeout(() => {
+            heading.innerText = "Stats";
+        for (e of sidebar.children) {
+            e.classList.remove("hidden");
+        }
+        }, 1000);
+    }
+    else {
+        heading.innerText = "+";
+        sidebar.style.width = "50px";
+        for (e of sidebar.children) {
+            if (e.id == "sidebar-heading") continue;
+            e.classList.add("hidden");
+        }
+    }
 }

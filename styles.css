@@ -24,8 +24,19 @@ main {
     color: white;
     padding: 10px;
     border-radius: 20px;
-    width: fit-content;
-    min-width: 200px;
+    width: 50px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: width 1s;
+}
+
+.hidden {
+    display: none;
+}
+
+#stats h2 {
+    cursor: pointer;
 }
 
 #game-area {
