@@ -9,11 +9,26 @@ body {
     overflow: hidden;
 }
 
-#game-area {
+main {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#stats {
+    background-color: orange;
+    color: white;
+    padding: 10px;
+    border-radius: 20px;
+    width: fit-content;
+    min-width: 200px;
+}
+
+#game-area {
     width: fit-content;
     height: fit-content;
     margin-left: auto;
@@ -136,6 +151,11 @@ body {
     animation-fill-mode: forwards;
 }
 
+.shake {
+    animation: shake 0.1s ease-out 0s 5;
+    animation-fill-mode: backwards;
+}
+
 @keyframes zoom {
     from {
         transform: scale(1);
@@ -150,9 +170,11 @@ body {
     0% {
         transform: translate(0px, 0px) scale(1.0);
     }
+
     50% {
         transform: translate(-20px, -20px) scale(0.8);
     }
+
     100% {
         transform: translate(-40px, 20px) scale(0.1);
         opacity: 0;
@@ -163,11 +185,27 @@ body {
     0% {
         transform: translate(0px, 0px) scale(1.0);
     }
+
     50% {
         transform: translate(20px, -20px) scale(0.8);
     }
+
     100% {
         transform: translate(40px, 20px) scale(0.1);
         opacity: 0;
+    }
+}
+
+@keyframes shake {
+    0% {
+        transform: translate(0%, 0%);
+    }
+
+    33% {
+        transform: translate(-2%, 0%);
+    }
+
+    66% {
+        transform: translate(2%, 0%);
     }
 }

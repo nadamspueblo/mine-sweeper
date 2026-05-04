@@ -1,17 +1,26 @@
+// Game settings
 let width = 10;
-let height = 7;
+let height = 8;
 let bombCount = 10;
 let difficulty = "easy";
 let flagCount = bombCount;
 let timeElapsed = 0;
 let timerId = null;
 
+// Player Stats
+let playCount = 0;
+let winCount = 0;
+let bestTime = 0;
+
+// Game state and references
 let locations = [];
 let overlayLocations = [];
 let gameboard = document.getElementById("gameboard");
 let gameOverlay = document.getElementById("gameoverlay");
 let timerDisplay = document.getElementById("timer");
+let gameArea = document.getElementById("game-area");
 
+loadStats();
 createGameBoard();
 
 function startEasy() {
@@ -20,7 +29,7 @@ function startEasy() {
     bombCount = 10;
     flagCount = bombCount;
     width = 10;
-    height = 7;
+    height = 8;
     document.getElementById("flag-count").innerText = flagCount;
     timerDisplay.innerText = "000";
     createGameBoard();
@@ -161,8 +170,17 @@ function revealCell(event) {
         revealAll();
     }
     else {
-        revealGroup(data.row, data.col);
-        checkBoard();
+        if (cell.innerText == "0") {
+            gameArea.classList.add("shake");
+            setTimeout(() => {
+                gameArea.classList.remove("shake");
+                revealGroup(data.row, data.col);
+                checkBoard();
+            }, 300);
+        } else {
+            revealGroup(data.row, data.col);
+            checkBoard();
+        }
     }
 }
 
@@ -211,6 +229,8 @@ function createShards(cell) {
 }
 
 function revealAll() {
+    localStorage.setItem("playCount", ++playCount);
+    updateStatDisplay();
     clearInterval(timerId);
     timerId = null;
     let count = 0;
@@ -261,6 +281,13 @@ function checkBoard() {
         }
     }
     alert("You won!");
+    localStorage.setItem("playCount", ++playCount);
+    localStorage.setItem("winCount", ++winCount);
+    if (timeElapsed < bestTime || bestTime == 0) {
+        bestTime = timeElapsed;
+        localStorage.setItem("bestTime", bestTime);
+    }
+    updateStatDisplay();
     for (let i = 0; i < bombCells.length; i++) {
         let cellOverlay = overlayLocations[bombCells[i].row][bombCells[i].col];
         setTimeout(() => {
@@ -280,4 +307,23 @@ function updateTimer() {
         timerDisplay.innerText = "0" + timeElapsed;
     else
         timerDisplay.innerText = timeElapsed;
+}
+
+function loadStats() {
+    playCount = localStorage.playCount ? localStorage.playCount : 0;
+    winCount = localStorage.winCount ? localStorage.winCount : 0;
+    bestTime = localStorage.bestTime ? localStorage.bestTime : 0;
+
+    updateStatDisplay();
+}
+
+function updateStatDisplay() {
+    let playCountDisplay = document.getElementById("play-count-stat");
+    playCountDisplay.innerText = playCount;
+
+    let winCountDisplay = document.getElementById("win-stat");
+    winCountDisplay.innerText = winCount;
+
+    let timeDisplay = document.getElementById("time-stat");
+    timeDisplay.innerText = bestTime == 0 ? "---" : bestTime + "s";
 }
