@@ -32,6 +32,10 @@ function startEasy() {
     height = 8;
     document.getElementById("flag-count").innerText = flagCount;
     timerDisplay.innerText = "000";
+    document.getElementById("easy-btn").classList.add("active");
+    document.getElementById("med-btn").classList.remove("active");
+    document.getElementById("hard-btn").classList.remove("active");
+    loadStats();
     createGameBoard();
 }
 
@@ -44,6 +48,10 @@ function startMedium() {
     height = 14;
     document.getElementById("flag-count").innerText = flagCount;
     timerDisplay.innerText = "000";
+    document.getElementById("easy-btn").classList.remove("active");
+    document.getElementById("med-btn").classList.add("active");
+    document.getElementById("hard-btn").classList.remove("active");
+    loadStats();
     createGameBoard();
 }
 
@@ -56,14 +64,18 @@ function startHard() {
     height = 24;
     document.getElementById("flag-count").innerText = flagCount;
     timerDisplay.innerText = "000";
+    document.getElementById("easy-btn").classList.remove("active");
+    document.getElementById("med-btn").classList.remove("active");
+    document.getElementById("hard-btn").classList.add("active");
+    loadStats();
     createGameBoard();
 }
 
 function clearAll() {
     if (timerId != null) {
         clearInterval(timerId);
-        timeElapsed = 0;
     }
+    timeElapsed = 0;
     gameboard.innerHTML = "";
     gameOverlay = document.createElement("div");
     gameOverlay.id = "gameoverlay";
@@ -229,7 +241,7 @@ function createShards(cell) {
 }
 
 function revealAll() {
-    localStorage.setItem("playCount", ++playCount);
+    localStorage.setItem("playCount" + difficulty, ++playCount);
     updateStatDisplay();
     clearInterval(timerId);
     timerId = null;
@@ -281,11 +293,11 @@ function checkBoard() {
         }
     }
     alert("You won!");
-    localStorage.setItem("playCount", ++playCount);
-    localStorage.setItem("winCount", ++winCount);
+    localStorage.setItem("playCount" + difficulty, ++playCount);
+    localStorage.setItem("winCount" + difficulty, ++winCount);
     if (timeElapsed < bestTime || bestTime == 0) {
         bestTime = timeElapsed;
-        localStorage.setItem("bestTime", bestTime);
+        localStorage.setItem("bestTime" + difficulty, bestTime);
     }
     updateStatDisplay();
     for (let i = 0; i < bombCells.length; i++) {
@@ -310,9 +322,9 @@ function updateTimer() {
 }
 
 function loadStats() {
-    playCount = localStorage.playCount ? localStorage.playCount : 0;
-    winCount = localStorage.winCount ? localStorage.winCount : 0;
-    bestTime = localStorage.bestTime ? localStorage.bestTime : 0;
+    playCount = localStorage.getItem("playCount" + difficulty) ? localStorage.getItem("playCount" + difficulty) : 0;
+    winCount = localStorage.getItem("winCount" + difficulty) ? localStorage.getItem("winCount" + difficulty) : 0;
+    bestTime = localStorage.getItem("bestTime" + difficulty) ? localStorage.getItem("bestTime" + difficulty) : 0;
 
     updateStatDisplay();
 }

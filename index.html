@@ -13,9 +13,9 @@
     <section id="game-area">
         <div id="controls">
             <span>
-                <button onclick="startEasy()">Easy</button>
-                <button onclick="startMedium()">Medium</button>
-                <button onclick="startHard()">Hard</button>
+                <button id="easy-btn" class="button active" onclick="startEasy()">Easy</button>
+                <button id="med-btn" class="button" onclick="startMedium()">Medium</button>
+                <button id="hard-btn" class="button" onclick="startHard()">Hard</button>
             </span>
             <span>
                 <span id="timer">000</span>⏱️
@@ -36,6 +36,10 @@
         <p class="hidden">Best time: <span id="time-stat">---</span></p>
     </aside>
     </main>
+    <div id="gameover-screen">
+        <span id="gameover-icon">🚩</span>
+        <span id="gameover-message">You won!!</span>
+    </div>
     <script src="script.js"></script>
 </body>
 

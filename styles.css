@@ -31,8 +31,12 @@ main {
     transition: width 1s;
 }
 
+#stats * {
+    transition: opacity 500ms;
+}
+
 .hidden {
-    display: none;
+    opacity: 0;
 }
 
 #stats h2 {
@@ -59,13 +63,18 @@ main {
     align-items: center;
 }
 
-#controls button {
+.button {
     background-color: orange;
     border: 2px solid white;
     color: white;
     padding: 6px 20px;
     border-radius: 20px;
     cursor: pointer;
+}
+
+.active {
+    background-color: white;
+    color: orange;
 }
 
 #gameboard {
@@ -103,10 +112,10 @@ main {
 }
 
 .medium {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     padding: 5px;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .hard {
@@ -145,6 +154,25 @@ main {
     background-color: darkgreen;
     transition: 1s;
     cursor: pointer;
+}
+
+#gameover-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 60px;
+    display: none;
+}
+
+#gameover-screen #gameover-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    font-size: 100px;
 }
 
 .explode {
