@@ -178,13 +178,14 @@ function countBombs(r, c) {
 function revealCell(event) {
     if (gameover) return;
     let overlayCell = event.target;
+    if (overlayCell.style.opacity == "0") return;
     if (timerId == null) {
         timerId = setInterval(updateTimer, 1000);
     }
     let data = JSON.parse(overlayCell.getAttribute("data-set"));
 
     let cell = locations[data.row][data.col];
-    if (cell.innerText == "💣") {
+    if (overlayCell.innerText != "🚩" && cell.innerText == "💣") {
         cell.innerText = "💥"
         cell.classList.add("explode");
         revealAll();
