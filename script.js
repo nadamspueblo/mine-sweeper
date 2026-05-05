@@ -15,6 +15,7 @@ let bestTime = 0;
 // Game state and references
 let locations = [];
 let overlayLocations = [];
+let gameover = false;
 let gameboard = document.getElementById("gameboard");
 let gameOverlay = document.getElementById("gameoverlay");
 let timerDisplay = document.getElementById("timer");
@@ -75,13 +76,19 @@ function clearAll() {
     if (timerId != null) {
         clearInterval(timerId);
     }
+    // Save gameover screen so it doesn't have to be recreated
+    let screen = document.getElementById("gameover-screen");
     timeElapsed = 0;
     gameboard.innerHTML = "";
     gameOverlay = document.createElement("div");
     gameOverlay.id = "gameoverlay";
     gameboard.appendChild(gameOverlay);
+    // Add gameover screen back to gameboard
+    gameboard.appendChild(screen);
     locations = [];
     overlayLocations = [];
+    hideGameOverScreen();
+    gameover = false;
 }
 
 
@@ -169,6 +176,7 @@ function countBombs(r, c) {
 }
 
 function revealCell(event) {
+    if (gameover) return;
     let overlayCell = event.target;
     if (timerId == null) {
         timerId = setInterval(updateTimer, 1000);
@@ -181,7 +189,7 @@ function revealCell(event) {
         cell.classList.add("explode");
         revealAll();
     }
-    else if (overlayCell.innerText != "🚩"){
+    else if (overlayCell.innerText != "🚩") {
         if (cell.innerText == "0") {
             gameArea.classList.add("shake");
             setTimeout(() => {
@@ -246,6 +254,8 @@ function revealAll() {
     clearInterval(timerId);
     timerId = null;
     let count = 0;
+    gameover = true;
+    setTimeout(showGameOverScreen, 2000, false);
     for (let r = 0; r < overlayLocations.length; r++) {
         let overlayRow = overlayLocations[r];
         let row = locations[r];
@@ -282,6 +292,7 @@ function toggleFlag(event) {
 }
 
 function checkBoard() {
+    if (gameover) return;
     let bombCells = [];
     for (let r = 0; r < locations.length; r++) {
         for (let c = 0; c < locations[0].length; c++) {
@@ -292,7 +303,8 @@ function checkBoard() {
 
         }
     }
-    alert("You won!");
+    gameover = true;
+    setTimeout(showGameOverScreen, 2000, true);
     localStorage.setItem("playCount" + difficulty, ++playCount);
     localStorage.setItem("winCount" + difficulty, ++winCount);
     if (timeElapsed < bestTime || bestTime == 0) {
@@ -347,9 +359,9 @@ function sidebarClick(event) {
         sidebar.style.width = "200px";
         setTimeout(() => {
             heading.innerText = "Stats";
-        for (e of sidebar.children) {
-            e.classList.remove("hidden");
-        }
+            for (e of sidebar.children) {
+                e.classList.remove("hidden");
+            }
         }, 1000);
     }
     else {
@@ -360,4 +372,24 @@ function sidebarClick(event) {
             e.classList.add("hidden");
         }
     }
+}
+
+function showGameOverScreen(win) {
+    let screen = document.getElementById("gameover-screen");
+    screen.style.display = "block";
+    screen.classList.add("pop-in");
+
+    if (win) {
+        document.getElementById("gameover-icon").innerText = "🚩";
+        document.getElementById("gameover-message").innerText = "You won!!";
+    }
+    else {
+        document.getElementById("gameover-icon").innerText = "💥";
+        document.getElementById("gameover-message").innerText = "You lost";
+    }
+}
+
+function hideGameOverScreen() {
+    let screen = document.getElementById("gameover-screen");
+    screen.style.display = "none";
 }

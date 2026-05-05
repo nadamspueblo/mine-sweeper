@@ -10,36 +10,37 @@
 
 <body>
     <main>
-    <section id="game-area">
-        <div id="controls">
-            <span>
-                <button id="easy-btn" class="button active" onclick="startEasy()">Easy</button>
-                <button id="med-btn" class="button" onclick="startMedium()">Medium</button>
-                <button id="hard-btn" class="button" onclick="startHard()">Hard</button>
-            </span>
-            <span>
-                <span id="timer">000</span>⏱️
-            </span>
-            <span>
-                <span id="flag-count">10</span> 🚩
-            </span>
-        </div>
+        <section id="game-area">
+            <div id="controls">
+                <span>
+                    <button id="easy-btn" class="button active" onclick="startEasy()">Easy</button>
+                    <button id="med-btn" class="button" onclick="startMedium()">Medium</button>
+                    <button id="hard-btn" class="button" onclick="startHard()">Hard</button>
+                </span>
+                <span>
+                    <span id="timer">000</span>⏱️
+                </span>
+                <span>
+                    <span id="flag-count">10</span> 🚩
+                </span>
+            </div>
 
-        <div id="gameboard">
-            <div id="gameoverlay"></div>
-        </div>
-    </section>
-    <aside id="stats">
-        <h2 id="sidebar-heading" onclick="sidebarClick(event)">+</h2>
-        <p class="hidden">Games played: <span id="play-count-stat">0</span></p>
-        <p class="hidden">Games won: <span id="win-stat">0</span></p>
-        <p class="hidden">Best time: <span id="time-stat">---</span></p>
-    </aside>
+            <div id="gameboard">
+                <div id="gameoverlay"></div>
+
+                <div id="gameover-screen">
+                    <span id="gameover-icon">🚩</span>
+                    <span id="gameover-message">You won!!</span>
+                </div>
+            </div>
+        </section>
+        <aside id="stats">
+            <h2 id="sidebar-heading" onclick="sidebarClick(event)">+</h2>
+            <p class="hidden">Games played: <span id="play-count-stat">0</span></p>
+            <p class="hidden">Games won: <span id="win-stat">0</span></p>
+            <p class="hidden">Best time: <span id="time-stat">---</span></p>
+        </aside>
     </main>
-    <div id="gameover-screen">
-        <span id="gameover-icon">🚩</span>
-        <span id="gameover-message">You won!!</span>
-    </div>
     <script src="script.js"></script>
 </body>
 
