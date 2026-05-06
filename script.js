@@ -16,6 +16,7 @@ let bestTime = 0;
 let locations = [];
 let overlayLocations = [];
 let gameover = false;
+let isFirstMove = true;
 let gameboard = document.getElementById("gameboard");
 let gameOverlay = document.getElementById("gameoverlay");
 let timerDisplay = document.getElementById("timer");
@@ -96,6 +97,7 @@ function createGameBoard() {
     for (let r = 0; r < height; r++) {
         createRow(r);
     }
+    isFirstMove = true;
     placeBombs();
     placeNumbers();
 }
@@ -154,6 +156,10 @@ function placeNumbers() {
             if (cell.innerText == "💣") continue;
             let count = countBombs(r, c);
             cell.innerText = count;
+            cell.classList.remove("zero");
+            cell.classList.remove("one");
+            cell.classList.remove("two");
+            cell.classList.remove("three");
             if (count == 0) cell.classList.add("zero");
             else if (count == 1) cell.classList.add("one");
             else if (count == 2) cell.classList.add("two");
@@ -186,6 +192,15 @@ function revealCell(event) {
 
     let cell = locations[data.row][data.col];
     if (overlayCell.innerText != "🚩" && cell.innerText == "💣") {
+        if (isFirstMove) {
+            moveMine(data.row, data.col);
+            isFirstMove = false;
+            revealGroup(data.row, data.col);
+            checkBoard();
+            //alert("prevented mine on first move");
+            return;
+        }
+
         cell.innerText = "💥"
         cell.classList.add("explode");
         revealAll();
@@ -199,10 +214,29 @@ function revealCell(event) {
                 checkBoard();
             }, 300);
         } else {
+            if (isFirstMove) {
+                moveMine(data.row, data.col);
+                isFirstMove = false;
+            }
             revealGroup(data.row, data.col);
             checkBoard();
         }
     }
+}
+
+function moveMine(row, col) {
+    let bombMoved = false;
+    locations[row][col].innerText = "";
+    while (!bombMoved) {
+        let r = Math.floor(Math.random() * height);
+        let c = Math.floor(Math.random() * width);
+        let cell = locations[r][c];
+        if (cell.innerText != "💣" && r != row && c != col) {
+            cell.innerText = "💣";
+            bombMoved = true;
+        }
+    }
+    placeNumbers();
 }
 
 function revealGroup(r, c) {
