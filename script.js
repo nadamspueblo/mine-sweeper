@@ -6,11 +6,32 @@ let difficulty = "easy";
 let flagCount = bombCount;
 let timeElapsed = 0;
 let timerId = null;
+let powerUps = [
+    {
+        name: "Mine Marker",
+        description: "Identifies one hidden mine",
+        icon: "📍",
+        frequency: 1
+    },
+    {
+        name: "50-50",
+        description: "Identifies which square has a mine between two adjacent squares",
+        icon: "🔮",
+        frequency: 1
+    },
+    {
+        name: "Free Square",
+        description: "Reveals one square",
+        icon: "🎭",
+        frequency: 1
+    }
+]
 
 // Player Stats
 let playCount = 0;
 let winCount = 0;
 let bestTime = 0;
+let ownedPowerups = [];
 
 // Game state and references
 let locations = [];
@@ -21,6 +42,11 @@ let gameboard = document.getElementById("gameboard");
 let gameOverlay = document.getElementById("gameoverlay");
 let timerDisplay = document.getElementById("timer");
 let gameArea = document.getElementById("game-area");
+let powerupIcon = null;
+let powerupIcon2 = null;
+let overlayCell1For5050 = null;
+let overlayCell2For5050 = null;
+let is5050Mode = false;
 
 loadStats();
 createGameBoard();
@@ -90,6 +116,9 @@ function clearAll() {
     overlayLocations = [];
     hideGameOverScreen();
     gameover = false;
+    // Clear powerups
+    let container = document.getElementById("powerups");
+    container.innerHTML = "";
 }
 
 
@@ -100,6 +129,7 @@ function createGameBoard() {
     isFirstMove = true;
     placeBombs();
     placeNumbers();
+    placePowerups();
 }
 
 function createRow(r) {
@@ -126,8 +156,10 @@ function createRow(r) {
         overlayCell.classList.add(difficulty);
         overlayCell.classList.add("overlay");
         overlayCell.setAttribute("data-set", JSON.stringify({ row: r, col: c }));
-        overlayCell.addEventListener("click", revealCell);
+        overlayCell.addEventListener("click", handleOverlayCellClick);
         overlayCell.addEventListener("contextmenu", toggleFlag);
+        overlayCell.addEventListener("mouseenter", handleOverlayMouseEnter);
+        overlayCell.addEventListener("mouseleave", handleOverlayMouseLeave);
         overlayRow.push(overlayCell);
         overlayRowDiv.appendChild(overlayCell);
     }
@@ -181,10 +213,185 @@ function countBombs(r, c) {
     return count;
 }
 
+function placePowerups() {
+    for (let i = 0; i < powerUps.length; i++) {
+        let count = 0;
+        while (count < powerUps[i].frequency) {
+            let r = Math.floor(Math.random() * height);
+            let c = Math.floor(Math.random() * width);
+            let cell = locations[r][c];
+            if (cell.innerText != "💣") {
+                let overlayCell = overlayLocations[r][c];
+                overlayCell.setAttribute("data-powerup", JSON.stringify(powerUps[i]));
+                count++;
+            }
+        }
+    }
+}
+
+function collectPowerup(event) {
+    let cell = event.target;
+    let powerup = JSON.parse(cell.getAttribute("data-powerup"));
+    cell.classList.add("explode");
+    setTimeout(() => {
+        // Remove powerup and hide overlay cell
+        cell.innerText = "";
+        cell.style.opacity = "0";
+        cell.setAttribute("data-powerup", "");
+        // Add powerup to sidebar
+        let container = document.getElementById("powerups");
+        let div = document.createElement("div");
+        div.innerText = powerup.icon;
+        div.setAttribute("data-desc", powerup.description);
+        div.setAttribute("data-name", powerup.name);
+        div.setAttribute("data-powerup", JSON.stringify(powerup));
+        div.addEventListener("click", usePowerup);
+        container.appendChild(div);
+    }, 500);
+}
+
+function usePowerup(event) {
+    event.stopPropagation();
+    let powerup = JSON.parse(event.target.getAttribute("data-powerup"));
+    if (powerup.name == "Free Square") {
+        useFreeSquarePowerup();
+        event.target.remove();
+    }
+    else if (powerup.name == "Mine Marker") {
+        useMineMarkerPowerup();
+        event.target.remove();
+    }
+    else if (powerup.name == "50-50") {
+        use5050Powerup();
+        event.target.remove();
+    }
+}
+
+function useFreeSquarePowerup() {
+    if (gameover) return;
+    let count = 0;
+    while (count < 1) {
+        let r = Math.floor(Math.random() * height);
+        let c = Math.floor(Math.random() * width);
+        let cell = overlayLocations[r][c];
+        if (cell.style.opacity != "0") {
+            cell.style.opacity = "0";
+            createShards(cell);
+            count++;
+        }
+    }
+}
+
+function useMineMarkerPowerup() {
+    if (gameover) return;
+    for (let r = 0; r < locations.length; r++) {
+        for (let c = 0; c < locations[r].length; c++) {
+            let cell = locations[r][c];
+            if (cell.innerText == "💣") {
+                let overlayCell = overlayLocations[r][c];
+                if (overlayCell.innerText != "🚩") {
+                    overlayCell.innerText = "🚩";
+                    flagCount--;
+                    document.getElementById("flag-count").innerText = flagCount;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+function handleOverlayMouseEnter(event) {
+    if (!is5050Mode) return;
+    let overlayCell = event.target;
+    if (overlayCell1For5050 && overlayCell != overlayCell1For5050) {
+        let data1 = JSON.parse(overlayCell1For5050.getAttribute("data-set"));
+        let data2 = JSON.parse(overlayCell.getAttribute("data-set"));
+        if (data2.row <= data1.row + 1 && data2.row >= data1.row - 1 && data2.col <= data1.col + 1 && data2.col >= data1.col - 1) {
+            overlayCell.classList.add("powerup-5050");
+        }
+    }
+    else if (overlayCell != overlayCell1For5050 && overlayCell != overlayCell2For5050)
+        overlayCell.classList.add("powerup-5050");
+
+}
+
+function handleOverlayMouseLeave(event) {
+    if (!is5050Mode) return
+    let overlayCell = event.target;
+    if (overlayCell != overlayCell1For5050 && overlayCell != overlayCell2For5050) {
+        overlayCell.classList.remove("powerup-5050");
+    }
+}
+
+function use5050Powerup() {
+    is5050Mode = true;
+}
+
+function execute5050() {
+    let data = JSON.parse(overlayCell1For5050.getAttribute("data-set"));
+    let cell = locations[data.row][data.col];
+    if (cell.innerText != "💣") {
+        overlayCell1For5050.style.opacity = "0";
+        createShards(overlayCell1For5050);
+    }
+    else {
+        data = JSON.parse(overlayCell2For5050.getAttribute("data-set"));
+        cell = locations[data.row][data.col];
+        if (cell.innerText != "💣") {
+            overlayCell2For5050.style.opacity = "0";
+            createShards(overlayCell2For5050);
+        }
+    }
+    overlayCell1For5050.classList.remove("powerup-5050");
+    overlayCell2For5050.classList.remove("powerup-5050");
+    overlayCell1For5050 = null;
+    overlayCell2For5050 = null;
+    is5050Mode = false;
+
+}
+
+function handleOverlayCellClick(event) {
+    if (is5050Mode) {
+        let overlayCell = event.target;
+        if (overlayCell == overlayCell1For5050) {
+            overlayCell1For5050.classList.remove("powerup-5050");
+            overlayCell1For5050 = overlayCell2For5050;;
+            overlayCell2For5050 = null;
+            return;
+        }
+        else if (overlayCell == overlayCell2For5050) {
+            overlayCell2For5050.classList.remove("powerup-5050");
+            overlayCell2For5050 = null;
+            return;
+        }
+
+        if (overlayCell1For5050 == null) {
+            overlayCell1For5050 = overlayCell;
+        }
+        else if (overlayCell2For5050 == null) {
+            overlayCell2For5050 = overlayCell;
+            execute5050();
+        }
+        else {
+            execute5050();
+        }
+
+
+    }
+    else {
+        revealCell(event);
+    }
+}
+
 function revealCell(event) {
     if (gameover) return;
     let overlayCell = event.target;
-    if (overlayCell.style.opacity == "0") return;
+    if (overlayCell.style.opacity == "0") {
+        if (overlayCell.getAttribute("data")) {
+
+        };
+        return;
+    }
     if (timerId == null) {
         timerId = setInterval(updateTimer, 1000);
     }
@@ -207,6 +414,7 @@ function revealCell(event) {
     }
     else if (overlayCell.innerText != "🚩") {
         if (cell.innerText == "0") {
+            isFirstMove = false;
             gameArea.classList.add("shake");
             setTimeout(() => {
                 gameArea.classList.remove("shake");
@@ -216,8 +424,8 @@ function revealCell(event) {
         } else {
             if (isFirstMove) {
                 moveMine(data.row, data.col);
-                isFirstMove = false;
             }
+            isFirstMove = false;
             revealGroup(data.row, data.col);
             checkBoard();
         }
@@ -246,17 +454,27 @@ function revealGroup(r, c) {
     else {
         let overlayCell = overlayLocations[r][c];
         if (overlayCell.style.opacity == "0") return;
-        overlayCell.style.opacity = "0";
-        createShards(cell);
-        if (cell.innerText == "0") {
-            setTimeout(revealGroup, 100, r - 1, c);
-            setTimeout(revealGroup, 200, r - 1, c - 1);
-            setTimeout(revealGroup, 300, r - 1, c + 1);
-            setTimeout(revealGroup, 400, r, c + 1);
-            setTimeout(revealGroup, 500, r, c - 1);
-            setTimeout(revealGroup, 600, r + 1, c);
-            setTimeout(revealGroup, 700, r + 1, c - 1);
-            setTimeout(revealGroup, 800, r + 1, c + 1);
+        if (overlayCell.getAttribute("data-powerup") && overlayCell.getAttribute("data-powerup") != "") {
+            //overlayCell.innerText = overlayCell.getAttribute("data-powerup");
+            let powerUp = JSON.parse(overlayCell.getAttribute("data-powerup"));
+            overlayCell.innerText = powerUp.icon;
+            overlayCell.style.backgroundColor = "transparent";
+            overlayCell.addEventListener("click", collectPowerup);
+        }
+        else {
+            overlayCell.style.opacity = "0";
+
+            createShards(cell);
+            if (cell.innerText == "0") {
+                setTimeout(revealGroup, 100, r - 1, c);
+                setTimeout(revealGroup, 200, r - 1, c - 1);
+                setTimeout(revealGroup, 300, r - 1, c + 1);
+                setTimeout(revealGroup, 400, r, c + 1);
+                setTimeout(revealGroup, 500, r, c - 1);
+                setTimeout(revealGroup, 600, r + 1, c);
+                setTimeout(revealGroup, 700, r + 1, c - 1);
+                setTimeout(revealGroup, 800, r + 1, c + 1);
+            }
         }
     }
 }
@@ -290,7 +508,8 @@ function revealAll() {
     timerId = null;
     let count = 0;
     gameover = true;
-    setTimeout(showGameOverScreen, 2000, false);
+    //setTimeout(showGameOverScreen, 2000, false);
+    showGameOverScreen(false);
     for (let r = 0; r < overlayLocations.length; r++) {
         let overlayRow = overlayLocations[r];
         let row = locations[r];
@@ -390,22 +609,18 @@ function updateStatDisplay() {
 function sidebarClick(event) {
     let sidebar = document.getElementById("stats");
     let heading = document.getElementById("sidebar-heading");
+    let details = document.getElementById("stats-details");
     if (heading.innerText == "+") {
-        sidebar.style.width = "200px";
+        sidebar.classList.add("open");
         setTimeout(() => {
             heading.innerText = "Stats";
-            for (e of sidebar.children) {
-                e.classList.remove("hidden");
-            }
+            details.classList.remove("hidden")
         }, 1000);
     }
     else {
         heading.innerText = "+";
-        sidebar.style.width = "50px";
-        for (e of sidebar.children) {
-            if (e.id == "sidebar-heading") continue;
-            e.classList.add("hidden");
-        }
+        sidebar.classList.remove("open");
+        details.classList.add("hidden");
     }
 }
 

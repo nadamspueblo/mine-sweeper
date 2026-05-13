@@ -34,11 +34,18 @@
                 </div>
             </div>
         </section>
-        <aside id="stats">
-            <h2 id="sidebar-heading" onclick="sidebarClick(event)">+</h2>
-            <p class="hidden">Games played: <span id="play-count-stat">0</span></p>
-            <p class="hidden">Games won: <span id="win-stat">0</span></p>
-            <p class="hidden">Best time: <span id="time-stat">---</span></p>
+        <aside id="stats" onclick="sidebarClick(event)">
+            <h2 id="sidebar-heading">+</h2>
+            <div id="stats-details" class="hidden">
+                <p>Games played: <span id="play-count-stat">0</span></p>
+                <p>Games won: <span id="win-stat">0</span></p>
+                <p>Best time: <span id="time-stat">---</span></p>
+
+                <div id="powerups">
+                    
+                </div>
+            </div>
+
         </aside>
     </main>
     <script src="script.js"></script>

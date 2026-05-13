@@ -1,12 +1,13 @@
 * {
     box-sizing: border-box;
+    margin: 0;
 }
 
 body {
     background-color: rgb(74, 74, 74);
     font-family: Helvetica, sans-serif;
     font-weight: 900;
-    overflow: hidden;
+    overflow: scroll;
 }
 
 main {
@@ -24,23 +25,52 @@ main {
     color: white;
     padding: 10px;
     border-radius: 20px;
-    width: 50px; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 50px;
     transition: width 1s;
+}
+
+#stats.open {
+    width: 200px;
 }
 
 #stats * {
     transition: opacity 500ms;
 }
 
+#stats-details {
+    margin-top: 20px;
+}
+
+#stats-details * {
+    margin-top: 10px;
+}
+
 .hidden {
     opacity: 0;
+    display: none;
 }
 
 #stats h2 {
     cursor: pointer;
+    text-align: center;
+}
+
+#powerups {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    font-size: 30px;
+}
+
+#powerups div {
+    cursor: pointer;
+}
+
+#powerups div:hover::before {
+    content: attr(data-name);
+    position: absolute;
+    font-size: 10px;
+    top: 0px;
 }
 
 #game-area {
@@ -56,6 +86,7 @@ main {
     width: auto;
     color: white;
     padding: 20px;
+    height: 80px;
     background-color: orange;
     display: flex;
     flex-direction: row;
@@ -122,7 +153,7 @@ main {
     width: 20px;
     height: 20px;
     padding: 0px;
-    font-size: 8px;
+    font-size: 10px;
 }
 
 .zero {
@@ -153,8 +184,16 @@ main {
 
 .overlay {
     background-color: darkgreen;
-    transition: 1s;
     cursor: pointer;
+}
+
+.overlay:hover {
+    background-color: rgb(0, 124, 0);
+}
+
+.powerup-5050::before {
+    content: "🔮";
+    position: relative;
 }
 
 #gameover-screen {
@@ -168,6 +207,7 @@ main {
     background-color: orange;
     padding: 40px;
     border-radius: 20px;
+    z-index: 100;
 }
 
 #gameover-screen #gameover-icon {
@@ -267,8 +307,44 @@ main {
         transform: translate(-50%, 0%);
         opacity: 0;
     }
+
     100% {
         transform: translate(-50%, -50%);
         opacity: 1;
+    }
+}
+
+/* Small screens */
+@media screen and (max-width: 700px) {
+    main {
+        flex-direction: column;
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        transform: translate(0%, 0%);
+        gap: 0px;
+    }
+
+    #game-area {
+        border-radius: 0px;
+    }
+
+    #stats {
+        width: 100%;
+        height: 50px;
+        transition: height 1s;
+        border-radius: 0;
+
+    }
+
+    #stats.open {
+        height: 200px;
+        width: 100%;
+    }
+
+    .easy {
+        width: calc((100vw / 10) - 1px);
+        height: calc((100vh - 130px) / 8 - 1px);
+        font-size: 30px;
     }
 }
