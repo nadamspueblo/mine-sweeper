@@ -274,7 +274,7 @@ function useFreeSquarePowerup() {
         let r = Math.floor(Math.random() * height);
         let c = Math.floor(Math.random() * width);
         let cell = overlayLocations[r][c];
-        if (cell.style.opacity != "0") {
+        if (cell.style.opacity != "0" && cell.innerText != "🚩") {
             cell.style.opacity = "0";
             createShards(cell);
             count++;
@@ -463,19 +463,19 @@ function revealGroup(r, c) {
         }
         else {
             overlayCell.style.opacity = "0";
-
-            createShards(cell);
-            if (cell.innerText == "0") {
-                setTimeout(revealGroup, 100, r - 1, c);
-                setTimeout(revealGroup, 200, r - 1, c - 1);
-                setTimeout(revealGroup, 300, r - 1, c + 1);
-                setTimeout(revealGroup, 400, r, c + 1);
-                setTimeout(revealGroup, 500, r, c - 1);
-                setTimeout(revealGroup, 600, r + 1, c);
-                setTimeout(revealGroup, 700, r + 1, c - 1);
-                setTimeout(revealGroup, 800, r + 1, c + 1);
-            }
         }
+        createShards(cell);
+        if (cell.innerText == "0") {
+            setTimeout(revealGroup, 100, r - 1, c);
+            setTimeout(revealGroup, 200, r - 1, c - 1);
+            setTimeout(revealGroup, 300, r - 1, c + 1);
+            setTimeout(revealGroup, 400, r, c + 1);
+            setTimeout(revealGroup, 500, r, c - 1);
+            setTimeout(revealGroup, 600, r + 1, c);
+            setTimeout(revealGroup, 700, r + 1, c - 1);
+            setTimeout(revealGroup, 800, r + 1, c + 1);
+        }
+        checkBoard();
     }
 }
 
